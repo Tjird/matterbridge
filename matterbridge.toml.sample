@@ -102,6 +102,7 @@ ColorNicks=false
 RunCommands=["PRIVMSG user hello","PRIVMSG chanserv something"]
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="ircspammer1 ircspammer2"
@@ -196,6 +197,7 @@ SkipTLSVerify=true
 ## Settings below can be reloaded by editing the file
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="ircspammer1 ircspammer2"
@@ -276,6 +278,7 @@ Nick="yourlogin"
 ## Settings below can be reloaded by editing the file
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="spammer1 spammer2"
@@ -416,6 +419,7 @@ EditDisable=false
 EditSuffix=" (edited)"
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="ircspammer1 ircspammer2"
@@ -491,6 +495,7 @@ Token="Yourtokenhere"
 ## Settings below can be reloaded by editing the file
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="ircspammer1 ircspammer2"
@@ -609,6 +614,7 @@ EditSuffix=" (edited)"
 PrefixMessagesWithNick=false
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="ircspammer1 ircspammer2"
@@ -722,6 +728,7 @@ EditDisable=false
 EditSuffix=" (edited)"
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="ircspammer1 ircspammer2"
@@ -830,6 +837,7 @@ EditDisable=false
 EditSuffix=" (edited)"
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="spammer1 spammer2"
@@ -893,6 +901,21 @@ ShowTopicChange=false
 #REQUIRED
 
 [rocketchat.rockme]
+#The rocketchat hostname. (prefix it with http or https)
+#REQUIRED (when not using webhooks)
+Server="https://yourrocketchatserver.domain.com:443"
+
+#login/pass of your bot. 
+#Use a dedicated user for this and not your own! 
+#REQUIRED (when not using webhooks)
+Login="yourlogin"
+Password="yourpass"
+
+#### Settings for webhook matterbridge.
+#USE DEDICATED BOT USER WHEN POSSIBLE! This allows you to use advanced features like message editing/deleting and uploads
+#You don't need to configure this, if you have configured the settings 
+#above.
+
 #Url is your incoming webhook url as specified in rocketchat
 #Read #https://rocket.chat/docs/administrator-guides/integrations/#how-to-create-a-new-incoming-webhook
 #See administration - integrations - new integration - incoming webhook
@@ -917,6 +940,8 @@ NoTLS=false
 #OPTIONAL (default false)
 SkipTLSVerify=true
 
+#### End settings for webhook matterbridge.
+
 ## RELOADABLE SETTINGS
 ## Settings below can be reloaded by editing the file
 
@@ -928,6 +953,7 @@ SkipTLSVerify=true
 PrefixMessagesWithNick=false
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="ircspammer1 ircspammer2"
@@ -1014,6 +1040,7 @@ NoHomeServerSuffix=false
 PrefixMessagesWithNick=false
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="spammer1 spammer2"
@@ -1094,6 +1121,7 @@ Authcode="ABCE12"
 PrefixMessagesWithNick=false
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="spammer1 spammer2"
@@ -1144,10 +1172,45 @@ StripNick=false
 #OPTIONAL (default false)
 ShowTopicChange=false
 
+
+
 ###################################################################
-#zulip section
+#
+# WhatsApp
+#
 ###################################################################
+
+[whatsapp.bridge]
+
+# Number you will use as a relay bot. Tip: Get some disposable sim card, don't rely on your own number.
+Number="+48111222333"
+
+# First time that you login you will need to scan QR code, then credentials willl be saved in a session file
+# If you won't set SessionFile then you will need to scan QR code on every restart
+# optional (by default the session is stored only in memory, till restarting matterbridge)
+SessionFile="session-48111222333.gob"
+
+# If your terminal is white we need to invert QR code in order for it to be scanned properly
+# optional (default false)
+QrOnWhiteTerminal=true
+
+# Messages will be seen by other WhatsApp contacts as coming from the bridge. Original nick will be part of the message.
+RemoteNickFormat="@{NICK}: "
+
+# extra label that can be used in the RemoteNickFormat
+# optional (default empty)
+Label="Organization"
+
+
+
+###################################################################
+#
+# zulip
+#
+###################################################################
+
 [zulip]
+
 #You can configure multiple servers "[zulip.name]" or "[zulip.name2]"
 #In this example we use [zulip.streamchat]
 #REQUIRED
@@ -1168,12 +1231,15 @@ Server="https://yourserver.zulipchat.com"
 
 #Topic of the messages matterbridge will use
 #OPTIONAL (default "matterbridge")
+#You can specify a specific topic for each channel using [gateway.inout.options]
+#See more information below at the gateway configuration
 Topic="matterbridge"
 
 ## RELOADABLE SETTINGS
 ## Settings below can be reloaded by editing the file
 
 #Nicks you want to ignore. 
+#Regular expressions supported
 #Messages from those users will not be sent to other bridges.
 #OPTIONAL
 IgnoreNicks="spammer1 spammer2"
@@ -1342,36 +1408,41 @@ name="gateway1"
 ##OPTIONAL (default false)
 enable=true
 
-    #[[gateway.in]] specifies the account and channels we will receive messages from.
-    #The following example bridges between mattermost and irc
+    # [[gateway.in]] specifies the account and channels we will receive messages from.
+    # The following example bridges between mattermost and irc
     [[gateway.in]]
 
-    #account specified above
-    #REQUIRED
+    # account specified above
+    # REQUIRED
     account="irc.freenode"
-    #channel to connect on that account
-    #How to specify them for the different bridges:
+
+    # channel to connect on that account
+    # How to specify them for the different bridges:
     #
-    #irc        - #channel (# is required) (this needs to be lowercase!)
-    #mattermost - channel (the channel name as seen in the URL, not the displayname)
-    #gitter     - username/room 
-    #xmpp       - channel
-    #slack      - channel (without the #)
-    #           - ID:C123456 (where C123456 is the channel ID) does not work with webhook
-    #discord    - channel (without the #)
-    #           - ID:123456789 (where 123456789 is the channel ID) 
+    # irc        - #channel (# is required) (this needs to be lowercase!)
+    # mattermost - channel (the channel name as seen in the URL, not the displayname)
+    # gitter     - username/room
+    # xmpp       - channel
+    # slack      - channel (without the #)
+    #            - ID:C123456 (where C123456 is the channel ID) does not work with webhook
+    # discord    - channel (without the #)
+    #            - ID:123456789 (where 123456789 is the channel ID)
     #               (https://github.com/42wim/matterbridge/issues/57)
-    #telegram   - chatid (a large negative number, eg -123456789)
+    # telegram   - chatid (a large negative number, eg -123456789)
     #             see (https://www.linkedin.com/pulse/telegram-bots-beginners-marco-frau)
-    #hipchat    - id_channel (see https://www.hipchat.com/account/xmpp for the correct channel)
-    #rocketchat - #channel (# is required (also needed for private channels!)
-    #matrix     - #channel:server (eg #yourchannel:matrix.org) 
-    #           - encrypted rooms are not supported in matrix
-    #steam      - chatid (a large number). 
+    # hipchat    - id_channel (see https://www.hipchat.com/account/xmpp for the correct channel)
+    # rocketchat - #channel (# is required (also needed for private channels!)
+    # matrix     - #channel:server (eg #yourchannel:matrix.org)
+    #            - encrypted rooms are not supported in matrix
+    # steam      - chatid (a large number).
     #             The number in the URL when you click "enter chat room" in the browser
-    #zulip      - stream (without the #)
+    # whatsapp   - 48111222333-123455678999@g.us A unique group JID;
+    #              if you specify an empty string bridge will list all the possibilities
+    #            - "Group Name" if you specify a group name the bridge will hint its JID to specify
+    #              as group names might change in time and contain weird emoticons
+    # zulip      - stream (without the #)
     #                  
-    #REQUIRED
+    # REQUIRED
     channel="#testing"
 
         #OPTIONAL - only used for IRC and XMPP protocols at the moment
@@ -1408,6 +1479,13 @@ enable=true
         #OPTIONAL - webhookurl only works for discord (it needs a different URL for each cahnnel)
         [gateway.inout.options]
         webhookurl="https://discordapp.com/api/webhooks/123456789123456789/C9WPqExYWONPDZabcdef-def1434FGFjstasJX9pYht73y"
+
+    [[gateway.inout]]
+    account="zulip.streamchat"
+    channel="general"
+        #OPTIONAL - topic only works for zulip
+        [gateway.inout.options]
+        topic="topic1"
 
     #API example
     #[[gateway.inout]]
